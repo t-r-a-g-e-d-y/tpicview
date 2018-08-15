@@ -12,6 +12,9 @@ def image_to_ansi(image, scale=1.0):
         new_size = (int(image.width*scale), int(image.height*scale))
         image = image.resize(new_size)
 
+    if image.mode != 'RGB':
+        image = image.convert('RGB')
+
     width, height = image.size
     ansi_image = ''
 
