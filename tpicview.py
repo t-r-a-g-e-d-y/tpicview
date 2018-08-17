@@ -18,35 +18,29 @@ def image_to_ansi(image, scale=1.0):
     width, height = image.size
     ansi_image = ''
 
-    b_left = 0
-    b_upper = 0
-    b_right = 4
-    b_lower = 8
-
     color_code = '\033[38;2;{};{};{}m\033[48;2;{};{};{}m▀'
-    while (b_right <= width and b_lower <= height):
-        while (b_right <= width):
-            bounding_box = [b_left, b_upper, b_right, b_lower]
+    for y in range(height//4):
+        y4 = 4 * y
+        for x in range(width//2):
+            x2 = 2 * x
+            top_px = image.getpixel((x2, y4))
+            bot_px = image.getpixel((x2, y4+2))
 
-            region_top = image.crop(bounding_box)
-            region_bot = region_top.crop([0, 4, 4, 8])
-
-            avg_top = average_color(region_top)
-            avg_bot = average_color(region_bot)
-
-            ansi_image += color_code.format(*avg_top, *avg_bot)
-
-            b_left += 4
-            b_right += 4
+            ansi_image += color_code.format(*top_px, *bot_px)
 
         ansi_image += '\033[0m\n'
 
-        b_left = 0
-        b_right = 4
-        b_upper += 8
-        b_lower += 8
-
     return ansi_image
+
+def average_pixels(pixels):
+    '''
+    :param pixels: list of (r,g,b) tuples
+    '''
+    num_pixels = len(pixels)
+    r = sum([px[0] for px in pixels])//num_pixels
+    g = sum([px[1] for px in pixels])//num_pixels
+    b = sum([px[2] for px in pixels])//num_pixels
+    return (r,g,b)
 
 def average_color(image):
     '''
