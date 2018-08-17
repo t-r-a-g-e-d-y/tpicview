@@ -19,12 +19,18 @@ def image_to_ansi(image, scale=1.0):
     ansi_image = ''
 
     color_code = '\033[38;2;{};{};{}m\033[48;2;{};{};{}m▀'
-    for y in range(height//4):
-        y4 = 4 * y
-        for x in range(width//2):
-            x2 = 2 * x
-            top_px = image.getpixel((x2, y4))
-            bot_px = image.getpixel((x2, y4+2))
+    for y in range(0, height-4, 4):
+        for x in range(0, width-2, 2):
+            '''
+            # average without cropping
+            top_pxls = [image.getpixel((_x, _y)) for _y in range(y, y+2) for _x in range(x, x + 2)]
+            bot_pxls = [image.getpixel((_x, _y)) for _y in range(y+2, y+4) for _x in range(x, x + 2)]
+
+            top_px = average_pixels(top_pxls)
+            bot_px = average_pixels(bot_pxls)
+            '''
+            top_px = image.getpixel((x, y))
+            bot_px = image.getpixel((x, y+2))
 
             ansi_image += color_code.format(*top_px, *bot_px)
 
