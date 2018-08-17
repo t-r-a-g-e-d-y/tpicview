@@ -76,8 +76,7 @@ def play_gif(image, scale, maxfps=24, hide_fps=False):
 
     while(1):
         print('\033[;H')
-        frame = image.convert('RGB')
-        ansi_image = image_to_ansi(frame, scale)
+        ansi_image = image_to_ansi(image, scale)
         print(ansi_image, end='')
 
         try:
