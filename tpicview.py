@@ -123,9 +123,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
     parser.add_argument('file', help='Image to display')
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
-    parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
     parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
-    parser.add_argument('--hide-fps', default=False, help='Don\'t print FPS (for gifs)', action='store_true')
+    parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
+    parser.add_argument('-hf', '--hide-fps', default=False, help='Don\'t print FPS (for gifs)', action='store_true')
     args = parser.parse_args()
 
     main(args)
