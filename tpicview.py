@@ -3,24 +3,23 @@ import time
 
 from PIL import Image
 
-def image_to_ansi(image, scale=1.0, sample_method='point'):
+def image_to_ansi(image, scale=1.0, sample_method='point', box_size=2):
     '''
     :param image: PIL Image
     :param scale: scale factor
     :param sample_method: `point` or `average`
+    :param box_size: side length of sampling box
     '''
-    x_step = 2
-    y_step = 4
+    x_step = box_size
+    y_step = box_size * 2
 
-    # the 0.25 multiplier makes a rendered image more closely
-    # match the size of the original image
-    if scale != 1.0:
-        scale = scale * 0.25
-        new_size = (int(image.width*scale), int(image.height*scale))
-        image = image.resize(new_size)
-    else:
-        new_size = (int(image.width*0.25), int(image.height*0.25))
-        image = image.resize(new_size)
+    # magic number so that images at 1.0 scale render close to real size
+    magic_scale = (y_step - x_step) / 7.5
+
+    new_width = int(image.width*magic_scale*scale)
+    new_height = int(image.height*magic_scale*scale)
+
+    image = image.resize((new_width, new_height))
 
     if image.mode != 'RGB':
         image = image.convert('RGB')
@@ -47,7 +46,7 @@ def image_to_ansi(image, scale=1.0, sample_method='point'):
                 bot_px = average_pixels(bot_pxls)
             elif sample_method == 'point':
                 top_px = pixels[y*width+x]
-                bot_px = pixels[(y+2)*width+x]
+                bot_px = pixels[(y+y_step//2)*width+x]
             else:
                 raise ValueError('sample_method must be one of `average`, `point`')
 
@@ -81,11 +80,12 @@ def average_color(image):
 def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
     return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
 
-def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point'):
+def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point', box_size=2):
     '''
     :param image: PIL Image
     :param scale: scale factor
     :param sample_method: `point` or `average`
+    :param box_size: side length of sampling box
     '''
     print('\033[2J') # clear screen
     start_time = last_time = time.time()
@@ -93,7 +93,7 @@ def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point'):
 
     while(1):
         print('\033[;H') # move cursor to 0,0
-        ansi_image = image_to_ansi(image, scale, sample_method)
+        ansi_image = image_to_ansi(image, scale, sample_method, box_size)
         print(ansi_image, end='')
 
         try:
@@ -115,12 +115,12 @@ def main(args):
 
     if image.format == 'GIF':
         try:
-            play_gif(image, args.scale, args.fps, args.hide_fps, args.sample)
+            play_gif(image, args.scale, args.fps, args.hide_fps, args.sample, args.box_size)
         except KeyboardInterrupt:
             print('\033[0m\033[2J')
             exit()
     else:
-        ansi_image = image_to_ansi(image, args.scale, args.sample)
+        ansi_image = image_to_ansi(image, args.scale, args.sample, args.box_size)
         print(ansi_image, end='')
 
 if __name__ == '__main__':
@@ -133,6 +133,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
     parser.add_argument('file', help='Image to display')
+    parser.add_argument('-b', '--box-size', default=2, help='Sampling box size', metavar='n', type=int)
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
     parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
