@@ -9,6 +9,9 @@ def image_to_ansi(image, scale=1.0, sample_method='point'):
     :param scale: scale factor
     :param sample_method: `point` or `average`
     '''
+    x_step = 2
+    y_step = 4
+
     # the 0.25 multiplier makes a rendered image more closely
     # match the size of the original image
     if scale != 1.0:
@@ -26,17 +29,25 @@ def image_to_ansi(image, scale=1.0, sample_method='point'):
     ansi_image = ''
 
     color_code = '\033[38;2;{};{};{}m\033[48;2;{};{};{}m▀'
-    for y in range(0, height-4, 4):
-        for x in range(0, width-2, 2):
+
+    pixels = image.getdata()
+
+    for y in range(0, height-y_step, y_step):
+        for x in range(0, width-x_step, x_step):
             if sample_method == 'average':
-                top_pxls = [image.getpixel((_x, _y)) for _y in range(y, y+2) for _x in range(x, x+2)]
-                bot_pxls = [image.getpixel((_x, _y)) for _y in range(y+2, y+4) for _x in range(x, x+2)]
+                top_pxls = [pixels[_y*width+_x]
+                            for _y in range(y, y+y_step//2)
+                            for _x in range(x, x+x_step)]
+
+                bot_pxls = [pixels[_y*width+_x]
+                            for _y in range(y+y_step//2, y+y_step)
+                            for _x in range(x, x+x_step)]
 
                 top_px = average_pixels(top_pxls)
                 bot_px = average_pixels(bot_pxls)
             elif sample_method == 'point':
-                top_px = image.getpixel((x, y))
-                bot_px = image.getpixel((x, y+2))
+                top_px = pixels[y*width+x]
+                bot_px = pixels[(y+2)*width+x]
             else:
                 raise ValueError('sample_method must be one of `average`, `point`')
 
