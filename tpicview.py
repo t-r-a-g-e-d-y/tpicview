@@ -51,10 +51,7 @@ def average_pixels(pixels):
     :param pixels: list of (r,g,b) tuples
     '''
     num_pixels = len(pixels)
-    r = sum([px[0] for px in pixels]) // num_pixels
-    g = sum([px[1] for px in pixels]) // num_pixels
-    b = sum([px[2] for px in pixels]) // num_pixels
-    return (r,g,b)
+    return [sum(px) // num_pixels for px in zip(*pixels)]
 
 def average_color(image):
     '''
