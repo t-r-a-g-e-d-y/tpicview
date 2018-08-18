@@ -3,13 +3,20 @@ import time
 
 from PIL import Image
 
-def image_to_ansi(image, scale=1.0):
+def image_to_ansi(image, scale=1.0, sample_method='point'):
     '''
     :param image: PIL Image
     :param scale: scale factor
+    :param sample_method: `point` or `average`
     '''
+    # the 0.25 multiplier makes a rendered image more closely
+    # match the size of the original image
     if scale != 1.0:
+        scale = scale * 0.25
         new_size = (int(image.width*scale), int(image.height*scale))
+        image = image.resize(new_size)
+    else:
+        new_size = (int(image.width*0.25), int(image.height*0.25))
         image = image.resize(new_size)
 
     if image.mode != 'RGB':
@@ -21,16 +28,17 @@ def image_to_ansi(image, scale=1.0):
     color_code = '\033[38;2;{};{};{}m\033[48;2;{};{};{}m▀'
     for y in range(0, height-4, 4):
         for x in range(0, width-2, 2):
-            '''
-            # average without cropping
-            top_pxls = [image.getpixel((_x, _y)) for _y in range(y, y+2) for _x in range(x, x + 2)]
-            bot_pxls = [image.getpixel((_x, _y)) for _y in range(y+2, y+4) for _x in range(x, x + 2)]
+            if sample_method == 'average':
+                top_pxls = [image.getpixel((_x, _y)) for _y in range(y, y+2) for _x in range(x, x+2)]
+                bot_pxls = [image.getpixel((_x, _y)) for _y in range(y+2, y+4) for _x in range(x, x+2)]
 
-            top_px = average_pixels(top_pxls)
-            bot_px = average_pixels(bot_pxls)
-            '''
-            top_px = image.getpixel((x, y))
-            bot_px = image.getpixel((x, y+2))
+                top_px = average_pixels(top_pxls)
+                bot_px = average_pixels(bot_pxls)
+            elif sample_method == 'point':
+                top_px = image.getpixel((x, y))
+                bot_px = image.getpixel((x, y+2))
+            else:
+                raise ValueError('sample_method must be one of `average`, `point`')
 
             ansi_image += color_code.format(*top_px, *bot_px)
 
@@ -65,7 +73,7 @@ def average_color(image):
 def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
     return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
 
-def play_gif(image, scale, maxfps=24, hide_fps=False):
+def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point'):
     '''
     :param image: PIL Image
     :param scale: scale factor
@@ -76,7 +84,7 @@ def play_gif(image, scale, maxfps=24, hide_fps=False):
 
     while(1):
         print('\033[;H')
-        ansi_image = image_to_ansi(image, scale)
+        ansi_image = image_to_ansi(image, scale, sample_method)
         print(ansi_image, end='')
 
         try:
@@ -98,21 +106,27 @@ def main(args):
 
     if image.format == 'GIF':
         try:
-            play_gif(image, args.scale, args.fps, args.hide_fps)
+            play_gif(image, args.scale, args.fps, args.hide_fps, args.sample)
         except KeyboardInterrupt:
             print('\033[0m\033[2J')
             exit()
     else:
-        ansi_image = image_to_ansi(image, args.scale)
+        ansi_image = image_to_ansi(image, args.scale, args.sample)
         print(ansi_image, end='')
 
 if __name__ == '__main__':
     import argparse
 
+    sample_methods = [
+        'average',
+        'point'
+    ]
+
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
     parser.add_argument('file', help='Image to display')
-    parser.add_argument('-s', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
+    parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
+    parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
     parser.add_argument('--hide-fps', default=False, help='Don\'t print FPS (for gifs)', action='store_true')
     args = parser.parse_args()
 
