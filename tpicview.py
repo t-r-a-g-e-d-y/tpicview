@@ -51,9 +51,9 @@ def average_pixels(pixels):
     :param pixels: list of (r,g,b) tuples
     '''
     num_pixels = len(pixels)
-    r = sum([px[0] for px in pixels])//num_pixels
-    g = sum([px[1] for px in pixels])//num_pixels
-    b = sum([px[2] for px in pixels])//num_pixels
+    r = sum([px[0] for px in pixels]) // num_pixels
+    g = sum([px[1] for px in pixels]) // num_pixels
+    b = sum([px[2] for px in pixels]) // num_pixels
     return (r,g,b)
 
 def average_color(image):
@@ -77,13 +77,14 @@ def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point'):
     '''
     :param image: PIL Image
     :param scale: scale factor
+    :param sample_method: `point` or `average`
     '''
-    print('\033[2J')
+    print('\033[2J') # clear screen
     start_time = last_time = time.time()
     count = 0
 
     while(1):
-        print('\033[;H')
+        print('\033[;H') # move cursor to 0,0
         ansi_image = image_to_ansi(image, scale, sample_method)
         print(ansi_image, end='')
 
