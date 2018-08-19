@@ -111,17 +111,17 @@ def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point', box
         count += 1
 
 def main(args):
-    image = Image.open(args.file)
+    for fp in args.file:
+        image = Image.open(fp)
 
-    if image.format == 'GIF':
-        try:
-            play_gif(image, args.scale, args.fps, args.hide_fps, args.sample, args.box_size)
-        except KeyboardInterrupt:
-            print('\033[0m\033[2J')
-            exit()
-    else:
-        ansi_image = image_to_ansi(image, args.scale, args.sample, args.box_size)
-        print(ansi_image, end='')
+        if image.format == 'GIF':
+            try:
+                play_gif(image, args.scale, args.fps, args.hide_fps, args.sample, args.box_size)
+            except KeyboardInterrupt:
+                print('\033[0m\033[2J')
+        else:
+            ansi_image = image_to_ansi(image, args.scale, args.sample, args.box_size)
+            print(ansi_image, end='')
 
 if __name__ == '__main__':
     import argparse
@@ -132,7 +132,7 @@ if __name__ == '__main__':
     ]
 
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
-    parser.add_argument('file', help='Image to display')
+    parser.add_argument('file', nargs='*', help='Image(s) to display')
     parser.add_argument('-b', '--box-size', default=2, help='Sampling box size', metavar='n', type=int)
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
