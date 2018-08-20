@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import itertools
+import shutil
 import time
 
 from PIL import Image
@@ -110,9 +112,49 @@ def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point', box
             print('FPS: {:.0f}'.format(count / (last_time - start_time)))
         count += 1
 
+def thumbnail(files, size, sample_method='point'):
+    ansi_images = []
+
+    for fp in files:
+        try:
+            image = Image.open(fp)
+        except OSError:
+            # not an image file
+            continue
+        image.thumbnail(size)
+        ansi_images.append(image_to_ansi(image, sample_method=sample_method).split('\n'))
+
+    term_cols, _ = shutil.get_terminal_size()
+    images_per_row = term_cols // (size[0] // 8)
+    num_images = len(ansi_images)
+
+    if not ansi_images:
+        return
+
+    for i in range(0, num_images-1, images_per_row):
+        zipped = list(itertools.zip_longest(*ansi_images[i:i+images_per_row]))
+        width = [s.count('\033') // 2 for s in zipped[0]]
+        output = ''
+        for row in zipped:
+            for i, segment in enumerate(row):
+                if not segment:
+                    output += '{}{}'.format(' ' if i else '', ' ' * width[i])
+                else:
+                    output += '{}{}'.format(' ' if i else '', segment)
+            output += '\n'
+        print(output, end='')
+
 def main(args):
+    if args.thumbnail:
+        thumbnail(args.file, (256,256), args.sample)
+        return
+
     for fp in args.file:
-        image = Image.open(fp)
+        try:
+            image = Image.open(fp)
+        except OSError:
+            # not an image file
+            continue
 
         if image.format == 'GIF':
             try:
@@ -137,7 +179,8 @@ if __name__ == '__main__':
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
     parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
-    parser.add_argument('-hf', '--hide-fps', default=False, help='Don\'t print FPS (for gifs)', action='store_true')
+    parser.add_argument('-hf', '--hide-fps', help='Don\'t print FPS (for gifs)', action='store_true')
+    parser.add_argument('-T', '--thumbnail', help='Thumbnail display of files (overrides -b and -sc)', action='store_true')
     args = parser.parse_args()
 
     main(args)
