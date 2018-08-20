@@ -5,7 +5,7 @@ import time
 
 from PIL import Image
 
-def image_to_ansi(image, scale=1.0, sample_method='point', box_size=2):
+def image_to_ansi(image, scale=1.0, sample_method='average', box_size=2):
     '''
     :param image: PIL Image
     :param scale: scale factor
@@ -177,7 +177,7 @@ if __name__ == '__main__':
     parser.add_argument('file', nargs='*', help='Image(s) to display')
     parser.add_argument('-b', '--box-size', default=2, help='Sampling box size', metavar='n', type=int)
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
-    parser.add_argument('-sp', '--sample', default='point', help='Sample method', choices=sample_methods)
+    parser.add_argument('-sp', '--sample', default='average', help='Sample method', choices=sample_methods)
     parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
     parser.add_argument('-hf', '--hide-fps', help='Don\'t print FPS (for gifs)', action='store_true')
     parser.add_argument('-T', '--thumbnail', help='Thumbnail display of files (overrides -b and -sc)', action='store_true')
