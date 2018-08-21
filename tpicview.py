@@ -82,6 +82,33 @@ def average_color(image):
 def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
     return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
 
+def gif_to_ansi(image, scale, sample_method):
+    '''
+    :param image: PIL Image
+    :param scale: scale factor
+    :param sample_method: `point` or `average`
+
+    :returns ansi_images: list of gif frames as ansi images
+    :returns frame_times: list of frame times in ms
+    '''
+    ansi_images = []
+    frame_times = []
+    c = 1
+
+    while(1):
+        print('\033[2K\rProcessing frame {}'.format(c), end='')
+        ansi_images.append(image_to_ansi(image, scale, sample_method))
+        frame_times.append(image.info['duration'])
+
+        try:
+            image.seek(image.tell()+1)
+        except EOFError:
+            break
+
+        c += 1
+
+    return ansi_images, frame_times
+
 def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', box_size=2):
     '''
     :param image: PIL Image
@@ -91,31 +118,42 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
     :param sample_method: `point` or `average`
     :param box_size: side length of sampling box
     '''
+    start_time = time.time()
+    last_time = time.time()
+
+    fps_counter = 0
+    frame_counter = 0
+
+    if maxfps:
+        fps_ms = 1 / maxfps
+
+    ansi_images = []
+    frames, frame_times = gif_to_ansi(image, scale, sample_method)
+    length = len(frames) - 1
+
     print('\033[2J') # clear screen
-    start_time = last_time = time.time()
-    count = 0
 
     while(1):
         print('\033[;H') # move cursor to 0,0
-        ansi_image = image_to_ansi(image, scale, sample_method)
-        print(ansi_image, end='')
-
-        try:
-            image.seek(image.tell()+1)
-        except EOFError:
-            image.seek(0)
+        print(frames[frame_counter], end='')
 
         if maxfps:
             elapsed = time.time() - last_time
-            if elapsed < 1 / maxfps:
-                time.sleep(1 / maxfps - elapsed)
-            last_time = time.time()
+            if elapsed < fps_ms:
+                time.sleep(fps_ms - elapsed)
 
             if not hide_fps:
-                print('FPS: {:.0f}'.format(count / (last_time - start_time)))
+                print('FPS: {:.0f}'.format(fps_counter / (last_time - start_time)))
+            last_time = time.time()
         else:
-            time.sleep(image.info['duration']/1000)
-        count += 1
+            time.sleep(frame_times[frame_counter]/1000)
+
+        if frame_counter == length:
+            frame_counter = 0
+        else:
+            frame_counter += 1
+
+        fps_counter += 1
 
 def thumbnail(files, size, sample_method='point'):
     '''
