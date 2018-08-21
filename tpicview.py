@@ -65,23 +65,6 @@ def average_pixels(pixels):
     num_pixels = len(pixels)
     return [sum(px) // num_pixels for px in zip(*pixels)]
 
-def average_color(image):
-    '''
-    :param image: PIL Image
-
-    Returns average color of `image` as (r,g,b)
-
-    https://stackoverflow.com/questions/12703871
-    '''
-    num_pixels = image.width * image.height
-    colors = image.getcolors() # A list of (count, rgb) values
-    color_sum = [(c[0] * c[1][0], c[0] * c[1][1], c[0] * c[1][2]) for c in colors]
-    average = ([sum(c)//num_pixels for c in zip(*color_sum)])
-    return average
-
-def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
-    return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
-
 def gif_to_ansi(image, scale, sample_method):
     '''
     :param image: PIL Image
@@ -191,6 +174,23 @@ def thumbnail(files, size, sample_method='point'):
                     output += '{}{}'.format(' ' if i else '', segment)
             output += '\n'
         print(output, end='')
+
+def average_color(image):
+    '''
+    :param image: PIL Image
+
+    Returns average color of `image` as (r,g,b)
+
+    https://stackoverflow.com/questions/12703871
+    '''
+    num_pixels = image.width * image.height
+    colors = image.getcolors() # A list of (count, rgb) values
+    color_sum = [(c[0] * c[1][0], c[0] * c[1][1], c[0] * c[1][2]) for c in colors]
+    average = ([sum(c)//num_pixels for c in zip(*color_sum)])
+    return average
+
+def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
+    return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
 
 def main(args):
     if args.thumbnail:
