@@ -107,12 +107,16 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
     fps_counter = 0
     frame_counter = 0
 
-    if maxfps:
-        fps_ms = 1 / maxfps
-
     ansi_images = []
     frames, frame_times = gif_to_ansi(image, scale, sample_method)
+
+    if sum(frame_times) == 0:
+        maxfps = 24
+
     length = len(frames) - 1
+
+    if maxfps:
+        fps_ms = 1 / maxfps
 
     print('\033[2J') # clear screen
 
@@ -204,7 +208,7 @@ def main(args):
             # not an image file
             continue
 
-        if image.format == 'GIF' and image.info.get('duration'):
+        if image.format == 'GIF' and image.info.get('duration') is not None:
             try:
                 play_gif(image, args.scale, args.fps, args.hide_fps, args.sample)
             except KeyboardInterrupt:
