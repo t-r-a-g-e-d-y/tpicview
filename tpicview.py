@@ -10,14 +10,12 @@ def image_to_ansi(image, scale=1.0, sample_method='average'):
     :param image: PIL Image
     :param scale: scale factor
     :param sample_method: `point` or `average`
-    :param box_size: side length of sampling box
     '''
     x_step = 2
     y_step = x_step * 2
 
     # magic number so that images at 1.0 scale render
-    # close to real size
-    # based on 10pt monospace font
+    # close to real size based on 10pt monospace font
     magic_scale = x_step / 7.5
 
     new_width = int(image.width*magic_scale*scale)
@@ -120,6 +118,11 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
         count += 1
 
 def thumbnail(files, size, sample_method='point'):
+    '''
+    :param files: list of filenames
+    :size: (width, height)
+    :param sample_method: `point` or `average`
+    '''
     ansi_images = []
 
     for fp in files:
@@ -135,7 +138,7 @@ def thumbnail(files, size, sample_method='point'):
         return
 
     term_cols, _ = shutil.get_terminal_size()
-    images_per_row = term_cols // (size[0] // 8) # 8 is a magic number based on 10pt monospace font
+    images_per_row = term_cols // (size[0] // 8) # 8 magic number crap based on 10pt monospace
     num_images = len(ansi_images)
 
     for i in range(0, num_images, images_per_row):
