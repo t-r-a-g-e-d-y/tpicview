@@ -5,18 +5,20 @@ import time
 
 from PIL import Image
 
-def image_to_ansi(image, scale=1.0, sample_method='average', box_size=2):
+def image_to_ansi(image, scale=1.0, sample_method='average'):
     '''
     :param image: PIL Image
     :param scale: scale factor
     :param sample_method: `point` or `average`
     :param box_size: side length of sampling box
     '''
-    x_step = box_size
-    y_step = box_size * 2
+    x_step = 2
+    y_step = x_step * 2
 
-    # magic number so that images at 1.0 scale render close to real size
-    magic_scale = (y_step - x_step) / 7.5
+    # magic number so that images at 1.0 scale render
+    # close to real size
+    # based on 10pt monospace font
+    magic_scale = x_step / 7.5
 
     new_width = int(image.width*magic_scale*scale)
     new_height = int(image.height*magic_scale*scale)
@@ -97,7 +99,7 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
 
     while(1):
         print('\033[;H') # move cursor to 0,0
-        ansi_image = image_to_ansi(image, scale, sample_method, box_size)
+        ansi_image = image_to_ansi(image, scale, sample_method)
         print(ansi_image, end='')
 
         try:
@@ -163,11 +165,11 @@ def main(args):
 
         if image.format == 'GIF' and image.info.get('duration'):
             try:
-                play_gif(image, args.scale, args.fps, args.hide_fps, args.sample, args.box_size)
+                play_gif(image, args.scale, args.fps, args.hide_fps, args.sample)
             except KeyboardInterrupt:
                 print('\033[0m\033[2J')
         else:
-            ansi_image = image_to_ansi(image, args.scale, args.sample, args.box_size)
+            ansi_image = image_to_ansi(image, args.scale, args.sample)
             print(ansi_image, end='')
 
 if __name__ == '__main__':
@@ -180,7 +182,6 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
     parser.add_argument('file', nargs='*', help='Image(s) to display')
-    parser.add_argument('-b', '--box-size', default=2, help='Sampling box size', metavar='n', type=int)
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='average', help='Sample method', choices=sample_methods)
     parser.add_argument('-f', '--fps', default=None, help='Max FPS (for gifs)', metavar='n', type=int)
