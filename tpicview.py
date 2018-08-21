@@ -16,7 +16,7 @@ def image_to_ansi(image, scale=1.0, sample_method='average'):
 
     # magic number so that images at 1.0 scale render
     # close to real size based on 10pt monospace font
-    magic_scale = x_step / 7.5
+    magic_scale = x_step / 7
 
     new_width = int(image.width*magic_scale*scale)
     new_height = int(image.height*magic_scale*scale)
@@ -163,7 +163,7 @@ def thumbnail(files, size, sample_method='point'):
         return
 
     term_cols, _ = shutil.get_terminal_size()
-    images_per_row = term_cols // (size[0] // 8) # 8 magic number crap based on 10pt monospace
+    images_per_row = term_cols // (size[0] // 7) # 7 magic number crap based on 10pt monospace
     num_images = len(ansi_images)
 
     for i in range(0, num_images, images_per_row):
@@ -226,6 +226,7 @@ if __name__ == '__main__':
     ]
 
     parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
+
     parser.add_argument('file', nargs='*', help='Image(s) to display')
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='average', help='Sample method', choices=sample_methods)
