@@ -124,14 +124,14 @@ def thumbnail(files, size, sample_method='point'):
         image.thumbnail(size)
         ansi_images.append(image_to_ansi(image, sample_method=sample_method).split('\n'))
 
-    term_cols, _ = shutil.get_terminal_size()
-    images_per_row = term_cols // (size[0] // 8)
-    num_images = len(ansi_images)
-
     if not ansi_images:
         return
 
-    for i in range(0, num_images-1, images_per_row):
+    term_cols, _ = shutil.get_terminal_size()
+    images_per_row = term_cols // (size[0] // 8) # 8 is a magic number based on 10pt monospace font
+    num_images = len(ansi_images)
+
+    for i in range(0, num_images, images_per_row):
         zipped = list(itertools.zip_longest(*ansi_images[i:i+images_per_row]))
         width = [s.count('\033') // 2 for s in zipped[0]]
         output = ''
