@@ -82,10 +82,12 @@ def average_color(image):
 def squeeze(val, oldmin=0, oldmax=255, newmin=0, newmax=1):
     return ((val - oldmin) * (newmax - newmin) / (oldmax - oldmin)) + newmin
 
-def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point', box_size=2):
+def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', box_size=2):
     '''
     :param image: PIL Image
     :param scale: scale factor
+    :param maxfps: if provided play gif at constant fps int
+    :param hide_fps: don't print fps below gif
     :param sample_method: `point` or `average`
     :param box_size: side length of sampling box
     '''
@@ -103,13 +105,16 @@ def play_gif(image, scale, maxfps=24, hide_fps=False, sample_method='point', box
         except EOFError:
             image.seek(0)
 
-        elapsed = time.time() - last_time
-        if elapsed < 1 / maxfps:
-            time.sleep(1 / maxfps - elapsed)
-        last_time = time.time()
+        if maxfps:
+            elapsed = time.time() - last_time
+            if elapsed < 1 / maxfps:
+                time.sleep(1 / maxfps - elapsed)
+            last_time = time.time()
 
-        if not hide_fps:
-            print('FPS: {:.0f}'.format(count / (last_time - start_time)))
+            if not hide_fps:
+                print('FPS: {:.0f}'.format(count / (last_time - start_time)))
+        else:
+            time.sleep(image.info['duration']/1000)
         count += 1
 
 def thumbnail(files, size, sample_method='point'):
@@ -156,7 +161,7 @@ def main(args):
             # not an image file
             continue
 
-        if image.format == 'GIF':
+        if image.format == 'GIF' and image.info.get('duration'):
             try:
                 play_gif(image, args.scale, args.fps, args.hide_fps, args.sample, args.box_size)
             except KeyboardInterrupt:
@@ -178,7 +183,7 @@ if __name__ == '__main__':
     parser.add_argument('-b', '--box-size', default=2, help='Sampling box size', metavar='n', type=int)
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
     parser.add_argument('-sp', '--sample', default='average', help='Sample method', choices=sample_methods)
-    parser.add_argument('-f', '--fps', default=24, help='Max FPS (for gifs)', metavar='n', type=int)
+    parser.add_argument('-f', '--fps', default=None, help='Max FPS (for gifs)', metavar='n', type=int)
     parser.add_argument('-hf', '--hide-fps', help='Don\'t print FPS (for gifs)', action='store_true')
     parser.add_argument('-T', '--thumbnail', help='Thumbnail display of files (overrides -b and -sc)', action='store_true')
     args = parser.parse_args()
