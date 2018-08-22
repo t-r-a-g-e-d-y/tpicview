@@ -100,7 +100,6 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
     fps_counter = 0
     frame_counter = 0
 
-    ansi_images = []
     frames, frame_times = gif_to_ansi(image, scale, sample_method)
 
     if sum(frame_times) == 0:
