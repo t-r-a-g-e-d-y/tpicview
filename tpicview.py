@@ -58,13 +58,6 @@ def image_to_ansi(image, scale=1.0, sample_method='average'):
 
     return ansi_image
 
-def average_pixels(pixels):
-    '''
-    :param pixels: list of (r,g,b) tuples
-    '''
-    num_pixels = len(pixels)
-    return [sum(px) // num_pixels for px in zip(*pixels)]
-
 def gif_to_ansi(image, scale, sample_method):
     '''
     :param image: PIL Image
@@ -179,6 +172,13 @@ def thumbnail(files, size, sample_method='point'):
             output += '\n'
         print(output, end='')
 
+def average_pixels(pixels):
+    '''
+    :param pixels: list of (r,g,b) tuples
+    '''
+    num_pixels = len(pixels)
+    return [sum(px) // num_pixels for px in zip(*pixels)]
+
 def average_color(image):
     '''
     :param image: PIL Image
@@ -225,7 +225,8 @@ if __name__ == '__main__':
         'point'
     ]
 
-    parser = argparse.ArgumentParser(description='View image or play gif in the terminal')
+    parser = argparse.ArgumentParser(prog='tpicview',
+        description='View images and play gifs in the terminal.')
 
     parser.add_argument('file', nargs='*', help='Image(s) to display')
     parser.add_argument('-sc', '--scale', default=1.0, help='Scale factor', metavar='n', type=float)
