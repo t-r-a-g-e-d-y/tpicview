@@ -58,7 +58,7 @@ def image_to_ansi(image, scale=1.0, sample_method='average'):
 
     return ansi_image
 
-def gif_to_ansi(image, scale, sample_method):
+def gif_to_ansi(image, scale, sample_method, verbose=False):
     '''
     :param image: PIL Image
     :param scale: scale factor
@@ -72,7 +72,8 @@ def gif_to_ansi(image, scale, sample_method):
     c = 1
 
     while(1):
-        print('\033[2K\rProcessing frame {}'.format(c), end='')
+        if verbose:
+            print('\033[2K\rProcessing frame {}'.format(c), end='')
         ansi_images.append(image_to_ansi(image, scale, sample_method))
         frame_times.append(image.info['duration'])
 
@@ -100,7 +101,7 @@ def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', b
     fps_counter = 0
     frame_counter = 0
 
-    frames, frame_times = gif_to_ansi(image, scale, sample_method)
+    frames, frame_times = gif_to_ansi(image, scale, sample_method, verbose=True)
 
     if sum(frame_times) == 0:
         maxfps = 24
