@@ -86,14 +86,13 @@ def gif_to_ansi(image, scale, sample_method, verbose=False):
 
     return ansi_images, frame_times
 
-def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point', box_size=2):
+def play_gif(image, scale, maxfps=None, hide_fps=False, sample_method='point'):
     '''
     :param image: PIL Image
     :param scale: scale factor
     :param maxfps: if provided play gif at constant fps int
     :param hide_fps: don't print fps below gif
     :param sample_method: `point` or `average`
-    :param box_size: side length of sampling box
     '''
     start_time = time.time()
     last_time = time.time()
