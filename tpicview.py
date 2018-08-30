@@ -232,7 +232,7 @@ if __name__ == '__main__':
     parser.add_argument('-sp', '--sample', default='average', help='Sample method', choices=sample_methods)
     parser.add_argument('-f', '--fps', default=None, help='Max FPS (for gifs)', metavar='n', type=int)
     parser.add_argument('-hf', '--hide-fps', help='Don\'t print FPS (for gifs)', action='store_true')
-    parser.add_argument('-T', '--thumbnail', help='Thumbnail display of files (overrides -b and -sc)', action='store_true')
+    parser.add_argument('-T', '--thumbnail', help='Thumbnail display of files', action='store_true')
     args = parser.parse_args()
 
     main(args)
