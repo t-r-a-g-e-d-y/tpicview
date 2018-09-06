@@ -21,14 +21,15 @@ optional arguments:
 ```
 
 ---
-###Point Sample
+### Point Sample
 
 ![Point Sample](point_sample.jpg)
 
-###Average Sample
+### Average Sample
 
 ![Average Sample](average_sample.jpg)
 
-###Original
+### Original
 
 ![Original](lena.jpg)
+
