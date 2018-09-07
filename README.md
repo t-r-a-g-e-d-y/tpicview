@@ -1,6 +1,8 @@
-tpicview
--
+**tpicview** is a simple tool for displaying images in a terminal using ANSI color codes and the ▀ character.
+
+
 ### Usage
+
 ```
 usage: tpicview [-h] [-sc n] [-sp {average,point}] [-f n] [-hf] [-T]
                 [file [file ...]]
@@ -20,16 +22,26 @@ optional arguments:
   -T, --thumbnail       Thumbnail display of files
 ```
 
----
-### Point Sample
+### Requirements
 
-![Point Sample](point_sample.jpg)
+`Pillow>=5.2.0`
 
-### Average Sample
+
+### Examples
+
+#### Gif Playback
+
+![Gif Playback](gif.webm)
+
+#### Average Sample
 
 ![Average Sample](average_sample.jpg)
 
-### Original
+#### Point Sample
+
+![Point Sample](point_sample.jpg)
+
+#### Original
 
 ![Original](lena.jpg)
 
