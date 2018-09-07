@@ -31,7 +31,7 @@ optional arguments:
 
 #### Gif Playback
 
-![Gif Playback](https://gfycat.com/PoliteBoldKillifish)
+![Gif Playback](https://thumbs.gfycat.com/PoliteBoldKillifish-size_restricted.gif)
 
 #### Average Sample
 
