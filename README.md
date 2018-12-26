@@ -1,5 +1,6 @@
 **tpicview** is a simple tool for displaying images in a terminal using ANSI color codes and the ▀ character.
 
+Supports two sample methods (average and point), GIF playback and an FPS override, and a thumbnail view.
 
 ### Usage
 
@@ -26,12 +27,15 @@ optional arguments:
 
 `Pillow>=5.2.0`
 
-
 ### Examples
 
-#### Gif Playback
+#### Gif Playback in a terminal
 
 ![Gif Playback](https://thumbs.gfycat.com/PoliteBoldKillifish-size_restricted.gif)
+
+#### Original
+
+![Original](lena.jpg)
 
 #### Average Sample
 
@@ -40,8 +44,3 @@ optional arguments:
 #### Point Sample
 
 ![Point Sample](point_sample.jpg)
-
-#### Original
-
-![Original](lena.jpg)
-
