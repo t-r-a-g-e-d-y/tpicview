@@ -35,12 +35,12 @@ optional arguments:
 
 #### Original
 
-![Original](lena.jpg)
+![Original](./examples/lena.jpg)
 
 #### Average Sample
 
-![Average Sample](average_sample.jpg)
+![Average Sample](./examples/average_sample.jpg)
 
 #### Point Sample
 
-![Point Sample](point_sample.jpg)
+![Point Sample](./examples/point_sample.jpg)
